@@ -7,181 +7,44 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class TextBuddy {
-	// Feedback from commands
+
 	private static final String MSG_ADDED_ITEM = "added to %s: \"%s\"";
 	private static final String MSG_DELETED_ITEM = "deleted from %s: \"%s\"";
 	private static final String MSG_CLEARED_CONTENT = "all content deleted from %s";
 	private static final String MSG_NO_ITEMS_TO_DISPLAY = "%s is empty";
-
-	// Error messages
 	private static final String MSG_INVALID_COMMAND = "Please enter a valid command.";
-	private static final String MSG_INVALID_ARGUMENT = "Please enter valid argument. ";
-	
-	private static final String MSG_WELCOME = "Welcome to TextBuddy. %s is ready for use";
-	private static final String MSG_PROMPT_FOR_COMMAND = "command: ";
-	
+	private static final String WELCOME_MESSAGE = "Welcome to TextBuddy. %s is ready for use.";
+	private static final String PROMPT_FOR_COMMAND = "command:";
+	private static final String TEMP_FILE = "tempfile.txt";
+
 	private String outputFile;
-	private boolean exitProgram;
-	private int itemCounter;
+	private int numItems;
+	private Scanner scanner;
 
-	public void startProgram() {
-		// this.setOutputFile(outputFileName);
-		this.printWelcomeMessage();
-		this.handleUserCommands();
+	public TextBuddy() {
+		this.outputFile = "output.txt";
+		scanner = new Scanner(System.in);
+		this.numItems = 0;
 	}
 
-	public void handleUserCommands() {
-		while (!exitProgram) {
-			this.printPromptForCommand();
-			this.executeUserCommands();
-		}
-	}
+	public TextBuddy(String outputFile) {
+		super();
+		this.outputFile = outputFile;
+		this.scanner = new Scanner(System.in);
+		this.numItems = 0;
 
-	public String[] getUserInput() {
-		Scanner scanner = new Scanner(System.in);
-
-		String[] userInput = new String[2];
-		userInput = scanner.nextLine().split(" ", 2);
-
-		return userInput;
-	}
-
-	public String extractCommand(String[] userInput) {
-		return userInput[0];
-	}
-
-	public String extractCommandArguments(String[] userInput) {
-		String commandArguments = "";
-
-		if (userInput.length == 2) {
-			commandArguments = userInput[1];
-		}
-
-		return commandArguments;
-	}
-
-	public void executeUserCommands() {
-		String[] input = this.getUserInput();
-		String command = this.extractCommand(input);
-		String commandArguments = this.extractCommandArguments(input);
-
-		switch (command) {
-		case "add":
-			addItem(commandArguments);
-			break;
-		case "display":
-			displayItems();
-			break;
-		case "delete":
-			deleteItem(Integer.parseInt(commandArguments));
-			break;
-		case "clear":
-			clearFileContent();
-			break;
-		case "exit":
-			exitProgram();
-			break;
-		default:
-			System.out.println("Invalid Command.");
-		}
-	}
-
-	public void printFeedback(String message, String fileName, String commandArgs) {
-		System.out.println(String.format(message, fileName, commandArgs));
 	}
 	
-	public void addItem(String arguments) {
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputFile, true));
-			writer.append(++itemCounter + ". " + arguments + "\n");
-			writer.newLine();
-			writer.close();
-			printFeedback(MSG_ADDED_ITEM, this.outputFile, arguments);
-		} catch (IOException ex) {
-			ex.printStackTrace();
+	public static void main(String[] args) {
+		TextBuddy tb;
+		// if user did not specify output file
+		if (args.length == 0) {
+			tb = new TextBuddy();
+		// else user specified output file
+		} else {
+			tb = new TextBuddy(args[0]);
 		}
-	}
-
-	public void displayItems() {
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(this.outputFile));
-
-			String line;
-			while ((line = reader.readLine()) != null) {
-				System.out.println(line);
-			}
-			reader.close();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		if(itemCounter == 0) {
-			printFeedback(MSG_NO_ITEMS_TO_DISPLAY, this.outputFile, "");
-		}
-	}
-
-	public void deleteItem(int itemToDelete) {
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(this.outputFile));
-			BufferedWriter writer = new BufferedWriter(new FileWriter("tempfile.txt", true));
-			int restartCounter = itemToDelete;
-			String deletedItem = "";
-			String line;
-
-			while ((line = reader.readLine()) != null) {
-				if (line.length() != 0) {
-					int currentItemNumber = Integer.parseInt(line.charAt(0) + "");
-					if (currentItemNumber < itemToDelete) {
-						writer.append(line);
-						writer.newLine();
-					} else if (currentItemNumber > itemToDelete) {
-						String newLine = restartCounter + line.split(".", 2)[1];
-						writer.append(newLine);
-						writer.newLine();
-						restartCounter++;
-					} else {
-						deletedItem = line.split(" ", 2)[1];
-					}
-				}
-			}
-			writer.flush();
-			reader.close();
-			writer.close();
-
-			File originalFile = new File(this.outputFile);
-			File newFile = new File("tempfile.txt");
-
-			originalFile.delete();
-			newFile.renameTo(new File(this.outputFile));
-			printFeedback(MSG_DELETED_ITEM, this.outputFile, deletedItem);
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void clearFileContent() {
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputFile));
-			writer.close();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-
-		this.itemCounter = 0;
-		printFeedback(MSG_CLEARED_CONTENT, this.outputFile, "");
-
-	}
-
-	public void exitProgram() {
-		this.exitProgram = true;
-	}
-
-	public void printWelcomeMessage() {
-		System.out.println("Welcome to TextBuddy. " + outputFile + " is ready for use.");
-	}
-	
-	public void printPromptForCommand() {
-		System.out.println("command: ");
+		tb.startProgram();
 	}
 
 	public String getOutputFile() {
@@ -192,19 +55,179 @@ public class TextBuddy {
 		this.outputFile = outputFile;
 	}
 
-	public boolean isExitProgram() {
-		return exitProgram;
+	public int getNumItems() {
+		return numItems;
 	}
 
-	public void setExitProgram(boolean exitProgram) {
-		this.exitProgram = exitProgram;
+	public void setNumItems(int itemCounter) {
+		this.numItems = itemCounter;
 	}
 
-	public int getItemCounter() {
-		return itemCounter;
+	public void startProgram() {
+		this.printFeedback(WELCOME_MESSAGE);
+		this.handleUserCommands();
 	}
 
-	public void setItemCounter(int itemCounter) {
-		this.itemCounter = itemCounter;
+	private void handleUserCommands() {
+		while (true) {
+			this.printFeedback(PROMPT_FOR_COMMAND);
+			this.executeUserCommands();
+		}
 	}
+
+	private void executeUserCommands() {
+		String[] input = this.getUserInput();
+		String command = this.extractCommand(input);
+		String commandArgument = this.extractCommandArgument(input);
+
+		switch (command) {
+		case "add":
+			this.addItem(commandArgument);
+			printFeedback(MSG_ADDED_ITEM, commandArgument);
+			break;
+		case "display":
+			this.displayItems();
+			break;
+		case "delete":
+			String deletedItem = this.deleteItem(Integer.parseInt(commandArgument));
+			printFeedback(MSG_DELETED_ITEM, deletedItem);
+			break;
+		case "clear":
+			this.clearFileContent();
+			printFeedback(MSG_CLEARED_CONTENT);
+			break;
+		case "exit":
+			System.exit(0);
+		default:
+			this.printFeedback(MSG_INVALID_COMMAND);
+		}
+	}
+
+	private String[] getUserInput() {
+		String[] userInput = new String[2];
+
+		if (this.scanner.hasNextLine()) {
+			userInput = this.scanner.nextLine().split(" ", 2);
+		} else {
+			System.exit(0);
+		}
+
+		return userInput;
+	}
+
+	private String extractCommand(String[] userInput) {
+		return userInput[0];
+	}
+
+	private String extractCommandArgument(String[] userInput) {
+		String commandArgument = "";
+
+		if (userInput.length == 2) {
+			commandArgument = userInput[1];
+		}
+
+		return commandArgument;
+	}
+
+	private void addItem(String arguments) {
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputFile, true));
+			writer.append(++numItems + ". " + arguments);
+			writer.newLine();
+			writer.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void displayItems() {
+		if (this.numItems == 0) {
+			this.printFeedback(MSG_NO_ITEMS_TO_DISPLAY);
+		} else {
+			this.printItems();
+		}
+	}
+
+	private String deleteItem(int itemToDelete) {
+		String deletedItem = this.delete(itemToDelete);
+		this.updateOutputFile();
+		return deletedItem;
+	}
+
+	private void clearFileContent() {
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputFile));
+			writer.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		this.setNumItems(0);
+	}
+
+	private void printItems() {
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(this.outputFile));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+			reader.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	private void updateOutputFile() {
+		File originalFile = new File(this.outputFile);
+		File newFile = new File(TEMP_FILE);
+		originalFile.delete();
+		newFile.renameTo(new File(this.outputFile));
+	}
+
+	private String delete(int itemToDelete) {
+		String itemDeleted = "";
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(this.outputFile));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(TEMP_FILE, true));
+
+			String line;
+			int updatedCounter = itemToDelete;
+
+			while ((line = reader.readLine()) != null) {
+				if (line.length() != 0) {
+					int currentItemNumber = Integer.parseInt(line.charAt(0) + "");
+					if (currentItemNumber < itemToDelete) {
+						writer.append(line);
+						writer.newLine();
+					} else if (currentItemNumber > itemToDelete) {
+						String newLine = updatedCounter + line.split(".", 2)[1];
+						writer.append(newLine);
+						writer.newLine();
+						updatedCounter++;
+					} else {
+						itemDeleted = line.split(" ", 2)[1];
+					}
+				}
+			}
+
+			writer.flush();
+			reader.close();
+			writer.close();
+
+			this.setNumItems(this.getNumItems() - 1);
+
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		return itemDeleted;
+	}
+
+	private void printFeedback(String feedBackMessage) {
+		System.out.println(String.format(feedBackMessage, this.outputFile));
+	}
+
+	private void printFeedback(String feedBackMessage, String feedbackArg) {
+		System.out.println(String.format(feedBackMessage, this.outputFile, feedbackArg));
+	}
+
 }
