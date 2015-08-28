@@ -1,0 +1,23 @@
+add little black cow
+add says
+add hello
+add and then
+add goodbye
+display
+delete 1
+delete 2
+display
+delete 3
+display
+delete 1
+delete 1
+display 
+add another cow
+add says hi
+add and then bye
+display
+clear
+display
+ 
+hello
+exit

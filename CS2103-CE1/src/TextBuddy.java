@@ -6,6 +6,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+/**
+ * TextBuddy is a program that takes user inputs and records it into a text file.
+ * User can view and delete items from the file as s/he wants.
+ * If user does not specify while file s/he would like inputs to get written out to, 
+ * program will store it into "mytextfile.txt" by default.
+ * 
+ * @author Jenny Vien
+ */
 public class TextBuddy {
 
 	private static final String MSG_ADDED_ITEM = "added to %s: \"%s\"";
@@ -20,15 +28,14 @@ public class TextBuddy {
 	private String outputFile;
 	private int numItems;
 	private Scanner scanner;
-
+	
 	public TextBuddy() {
-		this.outputFile = "output.txt";
+		this.outputFile = "mytextfile.txt";
 		scanner = new Scanner(System.in);
 		this.numItems = 0;
 	}
 
 	public TextBuddy(String outputFile) {
-		super();
 		this.outputFile = outputFile;
 		this.scanner = new Scanner(System.in);
 		this.numItems = 0;
@@ -46,9 +53,9 @@ public class TextBuddy {
 		}
 		tb.startProgram();
 	}
-
+	
 	public String getOutputFile() {
-		return outputFile;
+		return this.outputFile;
 	}
 
 	public void setOutputFile(String outputFile) {
@@ -56,7 +63,7 @@ public class TextBuddy {
 	}
 
 	public int getNumItems() {
-		return numItems;
+		return this.numItems;
 	}
 
 	public void setNumItems(int itemCounter) {
@@ -102,7 +109,13 @@ public class TextBuddy {
 			this.printFeedback(MSG_INVALID_COMMAND);
 		}
 	}
-
+	/**
+	 * Helper method that reads the user input from System.in.
+	 * @return a string array with two elements
+	 * userInput[0] contains the command (add, display, etc.)
+	 * userInput[1] contains the arguments for the command. 
+	 * 		(i.e. for "add item,"  userInput[1] contains "item")
+	 */
 	private String[] getUserInput() {
 		String[] userInput = new String[2];
 
@@ -115,10 +128,20 @@ public class TextBuddy {
 		return userInput;
 	}
 
+	/**
+	 * @param userInput
+	 * @return the command that the user would like to execute.
+	 * 		(i.e. for "add item," this method will return "add")
+	 */
 	private String extractCommand(String[] userInput) {
 		return userInput[0];
 	}
 
+	/**
+	 * @param userInput
+	 * @return the argument for a given command.
+	 * 		(i.e. for "add item," this method will return "item")
+	 */
 	private String extractCommandArgument(String[] userInput) {
 		String commandArgument = "";
 
@@ -129,17 +152,24 @@ public class TextBuddy {
 		return commandArgument;
 	}
 
-	private void addItem(String arguments) {
+	/**
+	 * Adds argument into the output file.
+	 * @param argument is the item to be added.
+	 */
+	private void addItem(String argument) {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputFile, true));
-			writer.append(++numItems + ". " + arguments);
+			writer.append(++numItems + ". " + argument);
 			writer.newLine();
 			writer.close();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Displays all the items in the output file.
+	 */
 	private void displayItems() {
 		if (this.numItems == 0) {
 			this.printFeedback(MSG_NO_ITEMS_TO_DISPLAY);
@@ -148,12 +178,19 @@ public class TextBuddy {
 		}
 	}
 
+	/**
+	 * @param itemToDelete an integer that specifies the position of the item in the file. 
+	 * @return The item that was deleted from the file.
+	 */
 	private String deleteItem(int itemToDelete) {
 		String deletedItem = this.delete(itemToDelete);
 		this.updateOutputFile();
 		return deletedItem;
 	}
 
+	/**
+	 * Deletes all the entry from the file.
+	 */
 	private void clearFileContent() {
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(this.outputFile));
@@ -163,7 +200,10 @@ public class TextBuddy {
 		}
 		this.setNumItems(0);
 	}
-
+	
+	/**
+	 * Prints out all the items in the file to System.out
+	 */
 	private void printItems() {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(this.outputFile));
@@ -177,6 +217,9 @@ public class TextBuddy {
 		}
 	}
 
+	/**
+	 * Helper method to update the output file after deleting an item.
+	 */
 	private void updateOutputFile() {
 		File originalFile = new File(this.outputFile);
 		File newFile = new File(TEMP_FILE);
@@ -184,6 +227,11 @@ public class TextBuddy {
 		newFile.renameTo(new File(this.outputFile));
 	}
 
+	/**
+	 * Helper method to delete the item from the file.
+	 * @param itemToDelete
+	 * @return The item to be deleted.
+	 */
 	private String delete(int itemToDelete) {
 		String itemDeleted = "";
 		try {
@@ -221,10 +269,19 @@ public class TextBuddy {
 		}
 		return itemDeleted;
 	}
-
+	
+	/**
+	 * Print messages to System.out
+	 * @param feedBackMessage
+	 */
 	private void printFeedback(String feedBackMessage) {
 		System.out.println(String.format(feedBackMessage, this.outputFile));
 	}
+
+	/**
+	 * Print messages to System.out
+	 * @param feedBackMessage
+	 */
 
 	private void printFeedback(String feedBackMessage, String feedbackArg) {
 		System.out.println(String.format(feedBackMessage, this.outputFile, feedbackArg));

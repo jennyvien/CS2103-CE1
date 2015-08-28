@@ -1,0 +1,55 @@
+Welcome to TextBuddy. mytextfile.txt is ready for use.
+command:
+added to mytextfile.txt: "little black cow"
+command:
+added to mytextfile.txt: "says"
+command:
+added to mytextfile.txt: "hello"
+command:
+added to mytextfile.txt: "and then"
+command:
+added to mytextfile.txt: "goodbye"
+command:
+1. little black cow
+2. says
+3. hello
+4. and then
+5. goodbye
+command:
+deleted from mytextfile.txt: "little black cow"
+command:
+deleted from mytextfile.txt: "hello"
+command:
+1. says
+2. and then
+3. goodbye
+command:
+deleted from mytextfile.txt: "goodbye"
+command:
+1. says
+2. and then
+command:
+deleted from mytextfile.txt: "says"
+command:
+deleted from mytextfile.txt: "and then"
+command:
+mytextfile.txt is empty
+command:
+added to mytextfile.txt: "another cow"
+command:
+added to mytextfile.txt: "says hi"
+command:
+added to mytextfile.txt: "and then bye"
+command:
+1. another cow
+2. says hi
+3. and then bye
+command:
+all content deleted from mytextfile.txt
+command:
+mytextfile.txt is empty
+command:
+Please enter a valid command.
+command:
+Please enter a valid command.
+command:
